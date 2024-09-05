@@ -59,12 +59,12 @@ LTT_Age9 <- rbind(LTT_Age9_OriginalFormat, LTT_Age9_NewFormat)
 LTT_Age9 <- LTT_Age9 |>
   mutate(Gain = (`Average scale score` - `Average scale score`[Year == 1978])/`Standard deviation`[Year == 1978])
 
-# Mutate to calculate the gain in standard deviations since 2003
-# Interpolate the 2003 Average scale score
-LTT_Age9_2003 <-239.3504 - .25*(242.8622 - 239.3504)
+# Mutate to calculate the gain in standard deviations since 2002
+# Interpolate the 2002 Average scale score
+LTT_Age9_2002 <-239.3504 - 0.5*(242.8622 - 239.3504)
 
 LTT_Age9 <- LTT_Age9 |>
-  mutate(Gain2003Age9 = (`Average scale score` - LTT_Age9_2003)/`Standard deviation`[Year == 2004])
+  mutate(Gain2002Age9 = (`Average scale score` - LTT_Age9_2002)/`Standard deviation`[Year == 2004])
 
 
 # Plot the data
