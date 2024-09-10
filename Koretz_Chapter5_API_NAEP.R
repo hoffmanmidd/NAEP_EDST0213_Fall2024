@@ -235,3 +235,52 @@ ggplot(readGr8, aes(x = Year, y = Gain2002ReadGr8)) +
   scale_y_continuous(breaks = seq(-1, 0.3, by = 0.1)) +
   geom_hline(yintercept = 0, linetype = "dotted") +
   geom_vline(xintercept = 2002, linetype = "dotted")
+
+# Long Term Trend data for 9 year olds in Reading
+# Cycle through theLTT NAEP data for 9 year old reading scores for 2022 - 1971
+# Ran into a roadblock with the API and will switch to Excel
+
+#bridge <- "https://www.nationsreportcard.gov/Dataservice/GetAdhocData.aspx?type=data&subject=reading&cohort=9&subscale=RRPCM&variable=TOTAL&jurisdiction=NT&stattype=MN:MN,SD:SD&Year=2022"
+#ReadAge9_2022 <- data.frame(fromJSON(bridge))
+#ReadAge9_2022
+
+# Load the LTT data Reading Age 9
+# Note that I've added "Original assessment format" with 0 = new format and 1 = original format
+LTT_Reading_Age9 <- read_excel("NDECoreExcel_Long-Term Trend Reading, Age 9, All students_20240906191521.xls", range = "A9:F25")
+
+# Mutate to calculate the gain in standard deviations since 1978
+LTT_Reading_Age9 <- LTT_Reading_Age9 |>
+  mutate(Gain = (`Average scale score` - `Average scale score`[Year == 1971])/`Standard deviation`[Year == 1971])
+
+# Mutate to calculate the gain in standard deviations since 2002
+# Interpolate the 2002 Average scale score
+LTT_Reading_Age9_2002 <-218.67507782428 - 0.4*(218.67507782428 - 211.747508133255)
+
+LTT_Reading_Age9 <- LTT_Reading_Age9 |>
+  mutate(Gain2002Age9 = (`Average scale score` - LTT_Reading_Age9_2002)/`Standard deviation`[Year == 2004])
+
+
+# Plot the data
+ggplot(LTT_Reading_Age9, aes(x = Year, y = `Average scale score`)) +
+  geom_point() +
+  geom_line(aes(group = `Original assessment format`)) +
+  scale_color_colorblind()
+
+# Plot the data in terms of standard deviations
+ggplot(LTT_Reading_Age9, aes(x = Year, y = Gain)) +
+  geom_point() +
+  geom_line(aes(group = `Original assessment format`)) +
+  scale_color_colorblind() +
+  scale_y_continuous(limits = c(0,0.9), breaks = seq(0, 0.9, by = 0.1)) 
+
+# Set the zero point to be 2003
+ggplot(LTT_Reading_Age9, aes(x = Year, y = Gain2002Age9)) +
+  geom_point() +
+  geom_line(aes(group = `Original assessment format`), show.legend = FALSE) +
+  scale_color_colorblind() +
+  scale_y_continuous(breaks = seq(-1, 0.4, by = 0.05)) +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 2002, linetype = "dotted") +
+  theme_minimal() 
+
+
